@@ -1,0 +1,526 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      Pedestrian accessibility indicators for the SDG - SDG Transformation Center
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.24/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.24/"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <style>
+      html,
+       body,
+       #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+       #controls {
+         width: 500px;
+       }
+
+       #outer-container {
+         padding: 15px;
+         width: 500px;
+         background-color:#f3f3f3;
+       }
+
+       #description{
+         padding: 10px 10px 0px 10px;
+         font-size: 11pt;
+         background-color:#f3f3f3;
+       }
+
+       #slider_container {
+        box-shadow: 2px 2px;
+       }
+
+       .esri-slider__thumb {
+        border: 2px solid #999999;
+       }
+
+       .esri-slider__segment-1 {
+        background-color: #999999 !important;
+       }
+
+       
+
+       
+
+       .esri-bookmarks__list{
+        max-height:30vh;
+       }
+
+
+        .esri-icon-non-visible::before {
+            content: "\e612";
+        }
+
+        .esri-icon-visible::before {
+            content: "\e613";
+        }
+
+        .esri-layer-list__child-toggle{
+            display:none;
+        }
+
+        .whitebg {
+          background-color: #f3f3f3;
+        }
+        .instructions {
+          padding: 10px 10px 0;
+        }
+
+        .esri-legend__service.esri-legend__group-layer > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) {
+          display: none;
+        }
+
+        .esri-legend__service.esri-legend__group-layer > div:nth-child(2) > h3 {
+          display: none;
+        }
+
+        .esri-legend__service.esri-legend__group-layer > div:nth-child(2) > h3 {
+          display: none;
+        }
+
+        .esri-popup__footer.esri-popup__footer--has-actions {
+          display:none;
+          }
+
+        
+
+   
+
+
+    </style>
+
+    <script>
+      require([
+            "esri/views/MapView",
+            "esri/widgets/LayerList",
+            "esri/WebMap",
+            "esri/widgets/Expand",
+            "esri/widgets/BasemapGallery",
+            "esri/core/watchUtils",
+            "esri/widgets/Bookmarks",
+            "esri/widgets/Legend",
+            "esri/layers/FeatureLayer",
+            "esri/widgets/HistogramRangeSlider",
+            "esri/smartMapping/statistics/histogram",
+            "esri/core/promiseUtils",
+            "esri/core/reactiveUtils"
+        ], function (MapView, LayerList, WebMap, Expand, BasemapGallery, watchUtils, Bookmarks, Legend, FeatureLayer, HistogramRangeSlider,histogram, promiseUtils, reactiveUtils) {
+        
+        // INITIAL MAP AND VIEW
+        
+
+        const map = new WebMap({
+              portalItem: {
+                id: "2209a9a06651460da2d7cccfabba5e58"
+              }
+            });
+
+        const view = new MapView({
+                container: "viewDiv",
+                map: map,
+                zoom: 2,
+                constraints: {
+                    minZoom: 2,
+                    maxZoom: 6
+                  },
+              center: [0,20],// longitude, latitude
+              popup: {
+                title: 'test',
+                dockEnabled: true,
+                dockOptions: {
+                  // Disables the dock button from the popup
+                  buttonEnabled: false,
+                  // Ignore the default sizes that trigger responsive docking
+                  breakpoint: false,
+                  position: 'top-left',
+
+                },
+                autoCloseEnabled: false
+              } 
+            });
+
+
+
+
+        // LAYER LIST //
+
+        // Create a "wrapper" div that contains 2 divs: our instructions, and 
+        // the div that we will put the Basemap Gallery into. Then send the 
+        // "wrapper div" in when we create the "Expand"
+        var wrapper = document.createElement("div");
+        wrapper.classList.add('whitebg');
+        
+        var instructions = document.createElement("div");
+        instructions.innerHTML = "Pick an SDG to see its walkability indicator :";
+        instructions.classList.add('instructions');
+        
+        var widgetContainer = document.createElement("div");
+        
+        // add the two divs to the "wrapper"
+        wrapper.appendChild(instructions);
+        wrapper.appendChild(widgetContainer);
+        
+        // send the "widgetContainer" in as the container of the widget
+        let layerList = new LayerList({
+          view: view,
+          container: widgetContainer
+        });
+          
+          // send the "wrapper" in as the "content" of the "Expand" widget.
+          
+
+        const layerListExpand = new Expand({
+            view: view,
+            content: wrapper,
+            expanded: true
+        });
+        view.ui.add(layerListExpand, "top-right");
+
+        
+
+
+
+
+      // LAYER VISIBILITY WATCHER
+
+        
+
+        //OVERALL ACCESSIBILITY COUNTRY INITIAL
+        let layer
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layer = map.allLayers.find(function (layer) {
+            return layer.id === "185126a8385-layer-4";
+          });
+          console.log(layer)
+        });
+
+
+        // CITIES: HEALTH
+        let layer0
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layer0 = map.allLayers.find(function (layer0) {
+            return layer0.id === "185123b9265-layer-4";
+          });
+          console.log(layer0)
+        });
+
+      // CITIES: PUBLIC SPACE
+      let layer1
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layer1 = map.allLayers.find(function (layer1) {
+            return layer1.id === "18512ba9229-layer-13";
+          });
+          console.log(layer1)
+        });
+
+      // CITIES: MOBILITY
+      let layer2
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layer2 = map.allLayers.find(function (layer2) {
+            return layer2.id === "18512b9a3af-layer-10";
+          });
+          console.log(layer2)
+        });
+
+      // CITIES: FOOD
+      let layer3
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layer3 = map.allLayers.find(function (layer3) {
+            return layer3.id === "18512bb770b-layer-15";
+          });
+          console.log(layer3)
+        });
+
+        // CITIES: EDUCATION
+        let layer4
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layer4 = map.allLayers.find(function (layer4) {
+            return layer4.id === "18512c25d0f-layer-18";
+          });
+          console.log(layer4)
+        });
+
+        
+        // COUNTRIES: HEALTH
+        let layerstudio
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layerstudio = map.allLayers.find(function (layerstudio) {
+            return layerstudio.id === "18510ad235f-layer-4";
+          });
+          console.log(layerstudio)
+        });
+
+        // COUNTRIES: PUBLIC SPACE
+        let layert1
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layert1 = map.allLayers.find(function (layert1) {
+            return layert1.id === "18512ba7e98-layer-12";
+          });
+          console.log(layert1)
+        });
+
+        // COUNTRIES: MOBILITY
+        let layert2
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layert2 = map.allLayers.find(function (layert2) {
+            return layert2.id === "18512b989f9-layer-9";
+          });
+          console.log(layert2)
+        });
+
+        // COUNTRIES: FOOD
+        let layert3
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layert3 = map.allLayers.find(function (layert3) {
+            return layert3.id === "18512bb83ee-layer-16";
+          });
+          console.log(layert3)
+        });
+
+        // COUNTRIES: EDUCATION
+        let layert4
+        map.when(function () {
+          ///console.log(webmap.layers)
+          layert4 = map.allLayers.find(function (layert4) {
+            return layert4.id === "18512c26b46-layer-19";
+          });
+          console.log(layert4)
+        });
+
+
+
+
+
+   //     let watcherMap = new Map();
+        
+    //    view.when(function() {
+    //      // watch all layers
+   //       map.layers.forEach(lyr => watchLayerVisibility(lyr));
+//
+   //     });
+
+      
+      
+  //    function watchLayerVisibility(lyr){
+    //    let watcher = watchUtils.watch(lyr, 'visible', e => console.log(`visibility  for layer with title ${lyr.title} is ${e}`));
+        
+   //     watcherMap.set(lyr, watcher)
+   //   }
+
+
+
+      view.when(function(){watchUtils.watch(layerstudio, "visible", e => {
+                            if (e) filterWidget(layer0);
+                        });
+      });
+
+
+      view.when(function(){watchUtils.watch(layert1, "visible", e => {
+                            if (e) filterWidget(layer1);
+                        });
+      });
+
+
+      view.when(function(){watchUtils.watch(layert2, "visible", e => {
+                            if (e) filterWidget(layer2);
+                        });
+      });
+
+
+      view.when(function(){watchUtils.watch(layert3, "visible", e => {
+                            if (e) filterWidget(layer3);
+                        });
+      });
+
+
+      view.when(function(){watchUtils.watch(layert4, "visible", e => {
+                            if (e) filterWidget(layer4);
+                        });
+      });
+        
+
+      
+
+
+
+        
+
+        function filterWidget(layer){
+        map.when(function () {
+        view.whenLayerView(layer).then((layerView) => {
+
+          
+            
+          });
+        });
+      
+      };
+
+
+              
+
+        //    const bgExpand = new Expand({
+        //        view: view,
+        //        content: new BasemapGallery({
+        //            view: view,
+        //        })
+        //    });
+        //    view.ui.add(bgExpand, "top-left");
+
+            view.when(() => {
+                const hideLayer = view.map.allLayers.find(
+                    (layer) => layer.title === "Microsoft Building Footprints - Tiles"
+                );
+                if (hideLayer)
+                    hideLayer.listMode = "hide";
+
+                // after 'editing' operationalItems by setting listMode, wait for the change to happen then continue
+                hideLayer.when(() => {
+                    layerList.operationalItems.forEach((listItem) => {
+                        // add a watcher to each layer
+                        watchUtils.watch(listItem.layer, "visible", e => {
+                            if (e) setOthersVisibility(listItem.layer.id);
+                        });
+                    })
+                })
+
+                // Listen to layer change events on all of map's layers
+                // in this case consider only to added layers, and add the radio-btn functionality to the new layers
+                view.map.allLayers.on(
+                    "change",
+                    (event) => {
+                        // change event fires after an item has been added, moved or removed from the collection.
+                        // event.moved - an array of moved layers
+                        // event.removed - an array of removed layers
+                        // event.added returns an array of added layers
+                        if (event.added.length > 0) {
+                            // add a watcher to each layer, if it is a part of the layerList
+                            event.added.forEach((layer) => {
+                                if (layer.listMode != "hide") {
+                                    watchUtils.watch(listItem.layer, "visible", e => {
+                                        if (e) setOthersVisibility(listItem.layer.id);
+                                    });
+                                }
+                            });
+                        }
+                    }
+                );
+            })
+
+            /* set all other layers (not including sublayers) to visibility false
+            except from one, specified by layerID string.
+            */
+            function setOthersVisibility(layerID) {
+                layerList.operationalItems.forEach((listItem) => {
+                    if (listItem.layer.id !== layerID) listItem.layer.visible = false;
+                })
+            }
+
+
+            
+
+
+
+            let legend = new Legend({
+              view: view
+            });
+
+            const legendExpand = new Expand({
+                view:view,
+                content:legend,
+                expanded:true
+            })
+
+            view.ui.add(legendExpand, "bottom-left");
+
+
+            const popup = view.popup;
+
+            popup.visibleElements = {
+                closeButton: false,
+                autoCloseEnabled: false
+              };
+
+            view.when(() => {
+          const centerPoint = view.center.clone();
+
+          popup.open({
+            title: "Accessibility indicators for the SDGs",
+            location: centerPoint,
+            content:
+              "Click on a country to see its scores. Read the full methodology <a href='https://sdsn.maps.arcgis.com/home/item.html?id=456f7b3788b641e3afb3a36d280648ad'>here."
+          });
+
+          
+        });
+
+
+            view.when(function(){
+              map.when(function () {
+
+                watchUtils.watch(popup, "visible", e => {
+                            if (e) document.getElementsByClassName("esri-feature-media__chart").innerHTML +=
+            "<h3>Insert horizontal labels</h3>";
+                        });
+                
+                
+                x=document.getElementsByClassName("div.esri-legend__layer-cell.esri-legend__layer-cell--info");  // Find the elements
+                for(var i = 0; i < x.length; i++){
+                  x[i].innerText="Hello JavaScript!";
+                }
+                
+              });
+            });
+
+
+
+
+
+
+
+
+
+
+
+
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    
+    <div id="controls" class="esri-widget">
+      <div id="outer-container" class="esri-widget">
+        <div id="slider-container"></div>
+      </div>
+    </div>
+  </body>
+</html>
