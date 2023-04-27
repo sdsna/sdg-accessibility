@@ -12,6 +12,7 @@ The scripts are to be followed in order. Further instructions are provided as co
 
 0. Global-scale raw amenities data are collected from OpenStreetMap and filtered with OsmPoisPbf and the uac_filter.txt query. 
 1. Accessibility calculation are computed using the 1_calculateAccess.py script.
+
 1.5 If needed, script 1.5_SplitCities.ipynb will produce subsets of the GHS functional urban areas by continent.
 2. Population grids for functional urban areas are extracted from the Global Human Settlement Layer and pre-processed using the 2_extractUA_QGIS.py script, to be run in QGIS. 
 3. Accessibility per grid cell (the data used for the visuals in the app) for urban areas globally is computed using the 3_calculatedGridAccess.py script.
