@@ -1,0 +1,7 @@
+Download the OSM.PBF file for your are of interest from the OSM server or Geofabrik
+
+Download OsmPoisPbf from https://github.com/MorbZ/OsmPoisPbf/ 
+
+Filter the full PBF file using uac_filter.txt
+
+java -jar osmpois.jar --filterFile uac_filter.txt --printHeader asia-latest.osm.pbf
