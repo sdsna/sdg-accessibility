@@ -16,6 +16,4 @@ The scripts are to be followed in order. Further instructions are provided as co
 6. World countries population-weighted averages are generated, from each urban center, by script 6_Generalization World countries from Cities.ipynb.
 7. Finally, adjustments to the data schema are made with script 7_Schema compatibilization.ipynb
 
-The scientific research behind this project is published here.
-
-If you would like to contribute to this project, or if you have any questions about it, please contact Leonardo Nicoletti.
+This is a methodology expansion from Nicoletti, L., Verma, T., Sirenko, M. (2022). Disadvantaged Communities Have Lower Access to Urban Infrastructure. Environment and Planning B: Urban Analytics and City Science, 0(0), which code is published in its own [repository](https://github.com/lnicoletti/city-access-map).
